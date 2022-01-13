@@ -2,7 +2,10 @@
 
 namespace OwowAgency\LaravelResources\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +60,28 @@ class ResourceController extends Controller
      * @return mixed
      */
     public function indexModel()
+    {
+        return $this->resourceModelClass::paginate();
+    }
+    
+    /**
+     * Display a listing of the related resource.
+     */
+    public function indexRelatable(Model $model): JsonResponse
+    {
+        $this->authorize('viewAny', $this->resourceModelClass);
+
+        $models = $this->indexRelatableModel($model);
+
+        $resources = resource($models);
+
+        return ok($resources);
+    }
+
+    /**
+     * Returns models instances used for the index related action.
+     */
+    public function indexRelatableModel(Model $model): LengthAwarePaginator
     {
         return $this->resourceModelClass::paginate();
     }
